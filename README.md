@@ -1,10 +1,36 @@
-[Inserir Imagem: Logos institucionais - LE COMP, Programa de Monitoria 2026.1, UFOP]
 
-# Tutorial Prático: Refatoração (Linguagem Java)
-**Disciplina:** Engenharia de Software  
-**Autor:** Hálisson Piovezana  
+<table>
+  <tr>
+    <td style="padding-right: 200px;">
+      <img src="./img/ufop-logo.jpg" height="300" style="object-fit: contain; alt="Descrição da Imagem 2">
+    </td>
+    <td>
+      <img src="./img/logo-lecomp.png" width="300" style="object-fit: cover; alt="Descrição da Imagem 1">
+    </td>
+  </tr>
 
----
+   <tr>
+    <td colspan="2" align="center" style="padding-top: 15px; font-size: 18px ">
+      <p><sub><i>Programa de Monitoria 2026.1</i></sub></p>
+    </td>
+  </tr>
+</table>
+
+<br><br>
+
+<div align="center">
+  <h1>Tutorial Prático: Refatoração</h1>
+  <p style="font-size: 12px"><strong>Linguagem Java</strong></p>
+  <br>
+  <p>
+    <b>Disciplina:</b> Engenharia de Software &nbsp;&bull;&nbsp; 
+    <b>Autor:</b> Hálisson Piovezana
+  </p>
+</div>
+
+
+
+<br><br>
 
 ## 1. Objetivo
 O objetivo deste guia prático é ensinar os alunos a corrigir code smells comuns encontrados em sistemas IoT reais escritos em Java, migrando da etapa de identificação passiva para a aplicação ativa de transformações de design de software. Os alunos irão transformar códigos acoplados, longos e de difícil manutenção em componentes modulares, legíveis e com papéis bem definidos (coesão).
