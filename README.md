@@ -9,14 +9,54 @@
 ## 1. Objetivo
 O objetivo deste guia prático é ensinar os alunos a corrigir code smells comuns encontrados em sistemas IoT reais escritos em Java, migrando da etapa de identificação passiva para a aplicação ativa de transformações de design de software. Os alunos irão transformar códigos acoplados, longos e de difícil manutenção em componentes modulares, legíveis e com papéis bem definidos (coesão).
 
-### Ferramentas Necessárias/Recomendadas
+---
+
+## 2. Preparação do Ambiente
+Descrição objetiva do que é necessário e o passo a passo para realizar o tutorial na sua máquina.
+
+### 2.1 Ferramentas Necessárias/Recomendadas
 * **IDE (Integrated Development Environment):** Eclipse, IntelliJ IDEA ou NetBeans. Ou editores de código: VSCode, Sublime Text;
 * **Java Development Kit (JDK):** Versão 11 ou superior + Extension Pack for Java (VScode);
 * **Git:** Ferramenta recomendada para realizar commits periódicos durante cada passo da refatoração.
 
+### 2.2 Importar
+Para começar a prática, você precisa trazer o código-fonte para a sua máquina local e abri-lo em uma IDE ou editor de código.
+
+**Recomendado**: Editor **VS Code** + Extensão **Extension Pack for Java** + **JDK** (obrigatório)
+
+1. Abra o **VS Code**.
+2. Clique com o botão direito no workspace ou vá no menu direito superior em `File > Add Folder to Workspace...` e selecione uma pasta onde deseja salvar o repositório do tutorial prático e clique em `Add`
+3. Inicie o terminal integrado do editor no caminho da pasta selecionada (clique com o botão direito em cima da pasta e vá em `Open in Integrated Terminal` ou vá no menu superior em `Terminal > New Terminal` e selecione a pasta)
+3. Com o terminal aberto no diretório da pasta, faça o clone do repositório base utilizando o Git:
+   ```bash
+   git clone <https://github.com/HalissonPiov/monitoria-engenharia-de-software.git>
+   ```
+
+### 2.3 Compilar
+Como estamos utilizando o **Extension Pack for Java**, o VS Code assume o trabalho pesado de compilação para você de forma quase transparente, ideal para focar apenas na refatoração.
+
+1. Ao abrir qualquer arquivo `.java`, a extensão será ativada automaticamente (você verá o ícone do Java carregando na barra inferior).
+2. O VS Code compila o código em segundo plano sempre que você salva o arquivo (`Ctrl + S`). Se a sua refatoração gerar algum erro de sintaxe, ele será imediatamente destacado com uma linha vermelha.
+3. **(Opcional)** Caso deseje compilar manualmente via terminal (por exemplo, utilizando o terminal nativo do Linux/Ubuntu ou via WSL) para isolar a verificação de erros em uma classe específica:
+   ```bash
+   javac NomeDaClasse.java
+   ```
+
+### 2.4 Executar
+Para garantir que o princípio fundamental da refatoração foi mantido (ou seja, o comportamento externo do software não foi alterado), você precisará rodar o código antes e depois das suas modificações.
+
+1. Navegue pelo painel lateral (Explorer) e abra o arquivo Java principal que contém o método `public static void main(String[] args)`.
+2. A extensão do Java adiciona automaticamente pequenos atalhos chamados **Run** e **Debug** logo acima da declaração do método `main`.
+3. Clique em **Run**.
+4. A execução será iniciada e você poderá acompanhar todos os logs, *prints* e resultados na aba `Terminal` na parte inferior da tela.
+5. **(Opcional)** Para executar diretamente pelo terminal integrado após compilar:
+   ```bash
+   java NomeDaClasse
+   ```
+
 ---
 
-## 2. Introdução: O que é Refatoração?
+## 3. Introdução: O que é Refatoração?
 [Inserir Imagem: Ilustração/Ícone sobre Engenharia de Software Moderna ou Refatoração]
 
 Conforme estabelecido na literatura da Engenharia de Software Moderna (Capítulo 9), refatoração consiste em modificações realizadas na estrutura interna de um ecossistema de software com o objetivo de melhorar sua arquitetura, legibilidade e manutenibilidade, sem alterar o seu comportamento. Refatorar não significa corrigir bugs ou adicionar novas funcionalidades, mas sim otimizar um código que já funciona para torná-lo mais limpo e resiliente a futuras expansões, seguindo as boas práticas.
