@@ -1,17 +1,17 @@
 
-<table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; max-width: 100%;">
   <tr>
-    <td style="padding-right: 800px;">
-      <img src="./img/ufop-logo.jpg" height="300" style="object-fit: contain; alt="Descrição da Imagem 2">
+    <td align="right" style="padding-right: 30px; width: 50%;">
+      <img src="./img/ufop-logo.jpg" height="250" style="object-fit: contain;" alt="Logo UFOP">
     </td>
-    <td>
-      <img src="./img/logo-lecomp.png" width="300" style="object-fit: cover; alt="Descrição da Imagem 1">
+      <td align="left" style="padding-left: 30px; width: 50%;">
+        <img src="./img/logo-lecomp.png" width="300" style="object-fit: contain;" alt="Logo LECOMP">
     </td>
   </tr>
 
-   <tr>
-    <td colspan="2" align="center" style="padding-top: 15px; font-size: 18px ">
-      <p><sub><i>Programa de Monitoria 2026.1</i></sub></p>
+  <tr>
+    <td colspan="2" align="center" style="padding-top: 25px;">
+      <p style="font-size: 16px;"><sub><i>Programa de Monitoria 2026.1</i></sub></p>
     </td>
   </tr>
 </table>
