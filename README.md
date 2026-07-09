@@ -1,7 +1,7 @@
 
 <table>
   <tr>
-    <td style="padding-right: 200px;">
+    <td style="padding-right: 800px;">
       <img src="./img/ufop-logo.jpg" height="300" style="object-fit: contain; alt="Descrição da Imagem 2">
     </td>
     <td>
@@ -83,7 +83,6 @@ Para garantir que o princípio fundamental da refatoração foi mantido (ou seja
 ---
 
 ## 3. Introdução: O que é Refatoração?
-[Inserir Imagem: Ilustração/Ícone sobre Engenharia de Software Moderna ou Refatoração]
 
 Conforme estabelecido na literatura da Engenharia de Software Moderna (Capítulo 9), refatoração consiste em modificações realizadas na estrutura interna de um ecossistema de software com o objetivo de melhorar sua arquitetura, legibilidade e manutenibilidade, sem alterar o seu comportamento. Refatorar não significa corrigir bugs ou adicionar novas funcionalidades, mas sim otimizar um código que já funciona para torná-lo mais limpo e resiliente a futuras expansões, seguindo as boas práticas.
 
@@ -97,16 +96,14 @@ Conforme estabelecido na literatura da Engenharia de Software Moderna (Capítulo
 ## 3. Visão Geral dos Projetos e Arquivos Coletados
 Para garantir a imersão em cenários de desenvolvimento de sistemas de produção reais, este tutorial adota trechos arquiteturais e conceituais extraídos de dois grandes ecossistemas de software livre voltados para a Internet das Coisas (IoT), em linguagem Java:
 
-### Projeto 1: Eclipse Kura
+### Projeto 1: [Eclipse Kura](https://github.com/eclipse-kura/kura)
 * **O que é o projeto:** É um framework baseado em Java e OSGi voltado para a construção de gateways de IoT no ecossistema M2M (Machine-to-Machine). Ele atua na camada de edge computing, servindo de ponte inteligente entre os sensores físicos locais e os servidores de computação em nuvem.
-* **Arquivo Selecionado:** `CloudClient.java`
-  * [Inserir Link: Caminho para o diretório/arquivo CloudClient.java no repositório do Eclipse Kura]
+* **Arquivo Selecionado:** [`CloudClient.java`](https://github.com/eclipse-kura/kura/blob/develop/kura/org.eclipse.kura.api/src/main/java/org/eclipse/kura/cloud/CloudClient.java)
 * **Contexto:** Este componente gerencia os canais de dados ativos entre o gateway físico e as aplicações cloud. Ele lida diretamente com conexões de telemetria baseadas em protocolos de rede restritos e foi selecionado devido à sua natureza crítica de passagem de parâmetros de conectividade.
 
-### Projeto 2: ThingsBoard
+### Projeto 2: [ThingsBoard](https://github.com/thingsboard/thingsboard)
 * **O que é o projeto:** Uma plataforma IoT em nuvem altamente escalável de código aberto usada para coleta, processamento, visualização de telemetria de sensores e gerenciamento remoto de frotas de dispositivos em larga escala.
-* **Arquivo Selecionado:** `MqttTransportHandler.java`
-  * [Inserir Link: Caminho para o diretório/arquivo MqttTransportHandler.java no repositório do ThingsBoard]
+* **Arquivo Selecionado:** [`MqttTransportHandler.java`](https://github.com/thingsboard/thingsboard/blob/master/common/transport/mqtt/src/main/java/org/thingsboard/server/transport/mqtt/MqttTransportHandler.java)
 * **Contexto:** Localizado no núcleo de rede da camada de transporte, este arquivo é responsável por interceptar e decodificar fluxos brutos de pacotes MQTT recebidos de milhares de sensores espalhados geograficamente. Ele foi selecionado por conter algoritmos densos de tratamento de estados e decisões estruturadas em cascata.
 
 ---
@@ -124,7 +121,11 @@ Com base nas características descritas do software e práticas de identificaç�
 
 **Código Base:**
 
-[Inserir Imagem: Captura de tela contendo o código original da interface CloudClient]
+```java
+public interface CloudClient {
+    public int publish(String deviceId, String appTopic, byte[] payload, int qos, boolean retain, int priority) throws KuraException;
+}
+```
 
 **Antes de alterar o código, responda brevemente:**
 1. Qual é o nome formal desse Code Smell segundo o livro-texto de Engenharia de Software Moderna?
@@ -140,30 +141,107 @@ Em vez de passar parâmetros soltos, vamos criar uma estrutura de dados dedicada
 * Crie uma nova classe chamada `PublishConfig`.
 * Mova os atributos relacionados ao contexto da mensagem (deviceId, appTopic, qos, retain, priority) para dentro desta classe.
 
-**Checkpoint 1: Verifique a sua classe `PublishConfig`.**
+**📍️ Checkpoint 1: Verifique a sua classe `PublishConfig`.**
 * Os atributos foram declarados como `private final` para garantir a imutabilidade durante o tráfego na rede (recomendado)?
 * Você criou um construtor que inicializa todos esses campos?
 * Os métodos Getters foram gerados? (Recomendado não criar Setters: objetos de configuração não devem ser alterados após instanciados).
 
-**Etapa 2: Atualizando o Contrato**
-Agora, substitua a longa lista de parâmetros na interface original para utilizar a sua nova classe, mantendo apenas o conteúdo da mensagem (payload) separado de suas configurações (config).
 
-**Checkpoint 2 (Resultado Esperado):** A sua interface `CloudClient` deve ter ficado semelhante a esta assinatura enxuta, mantendo as exceções contratuais originais:
+**Etapa 2: Atualizando o Contrato** <br> Agora, substitua a longa lista de parâmetros na interface original para utilizar a sua nova classe, mantendo apenas o conteúdo da mensagem (payload) separado de suas configurações (config).
 
-[Inserir Imagem: Captura de tela contendo o código refatorado da interface CloudClient]
+**📍️ Checkpoint 2 (Resultado Esperado):** A sua interface `CloudClient` deve ter ficado semelhante a esta assinatura enxuta, mantendo as exceções contratuais originais:
+```java
+public interface CloudClient {
+    public int publish(byte[] payload, PublishConfig config);
+}
+```
 
 ---
 
 ### Atividade 2: Desestruturando a "Cadeia de Comandos"
-**Contexto:** Ao processar uma mensagem publicada pelo dispositivo, o método `processDevicePublish` roteia a ação com base no tópico da mensagem. Com a evolução do projeto, o método se transformou em uma gigantesca cascata de if/else if, misturando conversão de dados, processamento no banco e respostas de protocolo no mesmo lugar.
+**Contexto:** Ao processar uma mensagem publicada pelo dispositivo, o método `processDevicePublish` roteia a ação com base no tópico da mensagem. Com a evolução do projeto, o método se transformou em uma gigantesca cascata de `if/else if`, misturando conversão de dados, processamento no banco e respostas de protocolo no mesmo lugar.
 
 **Código Base (Simplificado):**
+```
+void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
+    try {
+        MqttTransportAdaptor payloadAdaptor = deviceSessionCtx.getPayloadAdaptor();
 
-[Inserir Imagem: Captura de tela contendo o código base simplificado com a cascata de if/else]
+        if (deviceSessionCtx.isDeviceAttributesTopic(topicName)) {
+            TransportProtos.PostAttributeMsg postAttributeMsg =
+        payloadAdaptor.convertToPostAttributes(deviceSessionCtx, mqttMsg);
+            transportService.process(deviceSessionCtx.getSessionInfo(),
+        postAttributeMsg, getMetadata(deviceSessionCtx, topicName),
+        getPubAckCallback(ctx, msgId, postAttributeMsg));
 
-**Instruções:**
-* Identifique o tipo de Code Smell presente.
-* Aplique a refatoração de Extração de Método para remover o trabalho braçal de dentro dos condicionais tornando o método principal limpo e focado apenas no fluxo de controle.
+        } else if (deviceSessionCtx.isDeviceTelemetryTopic(topicName)) {
+            TransportProtos.PostTelemetryMsg postTelemetryMsg =
+        payloadAdaptor.convertToPostTelemetry(deviceSessionCtx, mqttMsg);
+            transportService.process(deviceSessionCtx.getSessionInfo(),
+        postTelemetryMsg, getMetadata(deviceSessionCtx, topicName),
+        getPubAckCallback(ctx, msgId, postTelemetryMsg));
+
+        } else if (topicName.startsWith(MqttTopics.DEVICE_RPC_RESPONSE_TOPIC)) {
+            TransportProtos.ToDeviceRpcResponseMsg rpcResponseMsg =
+        payloadAdaptor.convertToDeviceRpcResponse(deviceSessionCtx, mqttMsg,
+        MqttTopics.DEVICE_RPC_RESPONSE_TOPIC);
+            transportService.process(deviceSessionCtx.getSessionInfo(),
+        rpcResponseMsg, getPubAckCallback(ctx, msgId, rpcResponseMsg));
+
+        } else if (topicName.equals(MqttTopics.DEVICE_CLAIM_TOPIC)) {
+            TransportProtos.ClaimDeviceMsg claimDeviceMsg =
+        payloadAdaptor.convertToClaimDevice(deviceSessionCtx, mqttMsg);
+            transportService.process(deviceSessionCtx.getSessionInfo(),
+        claimDeviceMsg, getPubAckCallback(ctx, msgId, claimDeviceMsg));
+
+        } // ... O código original possui dezenas de outros "else if" sequenciais
+
+    } catch (Exception e) {
+        log.warn("[{}] Failed to process publish msg [{}][{}]", sessionId, topicName, msgId, e);
+        ctx.close();
+    }
+}
+```
+
+**Antes de alterar o código, responda brevemente:**
+* O método acima fere qual princípio fundamental da Engenharia de Software (SOLID)? Justifique.
+* Identifique o padrão que se repete dentro de cada bloco condicional. Quais são as duas etapas que sempre acontecem independente do tópico?
+
+**Etapa 1: Isolando a Lógica Interna (Durante a Refatoração)** <br>
+A regra de roteamento (o fluxo de controle if/else if) não é o problema, mas sim o trabalho braçal sendo feito dentro dela. Vamos aplicar a técnica de Extração de Método.
+- Selecione o conteúdo interno do primeiro bloco if (referente aos Atributos do Dispositivo).  
+- Extraia esse bloco para um método privado chamado handleDeviceAttributes.  
+
+📍 Checkpoint 1: O seu novo método privado precisa receber por parâmetro as variáveis locais do método pai que ele utiliza (ctx, mqttMsg, topicName, msgId). O código dele deve ficar parecido com isso:
+
+```java
+private void handleDeviceAttributes(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
+    TransportProtos.PostAttributeMsg msg = deviceSessionCtx.getPayloadAdaptor().convertToPostAttributes(deviceSessionCtx, mqttMsg);
+    transportService.process(deviceSessionCtx.getSessionInfo(), msg, getMetadata(deviceSessionCtx, topicName), getPubAckCallback(ctx, msgId, msg));
+}
+```
+
+**Etapa 2: Limpeza do Fluxo Principal (Depois da Refatoração)** <br>
+Repita o processo de extração para o bloco de telemetria (criando o handleDeviceTelemetry). Volte ao método original e substitua as dezenas de linhas de conversão pelas chamadas enxutas dos novos métodos.  
+
+📍 Checkpoint 2 (Resultado Esperado):
+O método principal deixou de ser um gargalo de processamento e passou a atuar como um orquestrador limpo e legível. A sua evolução deve refletir este aspecto:
+
+```java
+void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
+    try {
+        if (deviceSessionCtx.isDeviceAttributesTopic(topicName)) {
+            handleDeviceAttributes(ctx, mqttMsg, topicName, msgId);
+        } else if (deviceSessionCtx.isDeviceTelemetryTopic(topicName)) {
+            handleDeviceTelemetry(ctx, mqttMsg, topicName, msgId);
+        }
+        // ... demais condições mantidas de forma limpa
+    } catch (Exception e) {
+        log.warn("Failed to process...", e);
+        ctx.close();
+    }
+}
+```
 
 ---
 
