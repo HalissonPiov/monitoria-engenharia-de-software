@@ -212,7 +212,8 @@ A regra de roteamento (o fluxo de controle if/else if) não é o problema, mas s
 - Selecione o conteúdo interno do primeiro bloco if (referente aos Atributos do Dispositivo).  
 - Extraia esse bloco para um método privado chamado handleDeviceAttributes.  
 
-📍 Checkpoint 1: O seu novo método privado precisa receber por parâmetro as variáveis locais do método pai que ele utiliza (ctx, mqttMsg, topicName, msgId). O código dele deve ficar parecido com isso:
+📍 Checkpoint 1: <br>
+O seu novo método privado precisa receber por parâmetro as variáveis locais do método pai que ele utiliza (ctx, mqttMsg, topicName, msgId). O código dele deve ficar parecido com isso:
 
 ```java
 private void handleDeviceAttributes(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
@@ -224,7 +225,7 @@ private void handleDeviceAttributes(ChannelHandlerContext ctx, MqttPublishMessag
 **Etapa 2: Limpeza do Fluxo Principal (Depois da Refatoração)** <br>
 Repita o processo de extração para o bloco de telemetria (criando o handleDeviceTelemetry). Volte ao método original e substitua as dezenas de linhas de conversão pelas chamadas enxutas dos novos métodos.  
 
-📍 Checkpoint 2 (Resultado Esperado):
+📍 Checkpoint 2 (Resultado Esperado): <br>
 O método principal deixou de ser um gargalo de processamento e passou a atuar como um orquestrador limpo e legível. A sua evolução deve refletir este aspecto:
 
 ```java
