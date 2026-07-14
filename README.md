@@ -28,8 +28,6 @@
   </p>
 </div>
 
-
-
 <br><br>
 
 ## 1. Objetivo
@@ -93,7 +91,7 @@ Conforme estabelecido na literatura da Engenharia de Software Moderna (Capítulo
 
 ---
 
-## 3. Visão Geral dos Projetos e Arquivos Coletados
+## 4. Visão Geral dos Projetos e Arquivos Coletados
 Para garantir a imersão em cenários de desenvolvimento de sistemas de produção reais, este tutorial adota trechos arquiteturais e conceituais extraídos de dois grandes ecossistemas de software livre voltados para a Internet das Coisas (IoT), em linguagem Java:
 
 ### Projeto 1: [Eclipse Kura](https://github.com/eclipse-kura/kura)
@@ -108,16 +106,12 @@ Para garantir a imersão em cenários de desenvolvimento de sistemas de produç�
 
 ---
 
-## 4. Exercício Prático Proposto
-Com base nas características descritas do software e práticas de identificação de code smells, os alunos deverão propor possíveis refatorações válidas para os componentes dos projetos abordados.
+## 5. Exercício Prático Proposto
+Com base nas características descritas do software e práticas de identificação de code smells, você deverá propor possíveis refatorações válidas para os componentes dos projetos abordados.
 
-### Atividade 1: Lidando com Parâmetros Excessivos
+### ➡️ Atividade 1: Lidando com Parâmetros Excessivos (Projeto Eclipse Kura)
 **Contexto:** Na interface responsável por realizar o envio de telemetria de um dispositivo para o broker na nuvem, o método de publicação acabou acumulando diversas variáveis primitivas de configuração ao longo do tempo.
 
-**Problemas:**
-* **Falta de Legibilidade:** Lendo a chamada do método, é impossível saber o que 1, true e 2 significam sem olhar a documentação.
-* **Propensão a Erros (Bugs Silenciosos):** Como qos e priority são do tipo int, se o programador acidentalmente inverter a ordem na hora de chamar o método (passar a prioridade no lugar do QoS), o código vai compilar sem erros, mas o dispositivo IoT vai se comportar de forma errada na rede.
-* **Rigidez:** Se amanhã o protocolo de rede for atualizado e precisarmos passar um novo parâmetro, como um timeToLive (tempo de expiração), teremos que alterar a assinatura da interface, quebrando todas as classes que já implementavam esse método.
 
 **Código Base:**
 
@@ -126,35 +120,76 @@ public interface CloudClient {
     public int publish(String deviceId, String appTopic, byte[] payload, int qos, boolean retain, int priority) throws KuraException;
 }
 ```
+<p style="font-size: 16px;"><sub><i>Linha 326 do arquivo CloudClient.java</i></sub></p>
 
-**Antes de alterar o código, responda brevemente:**
-1. Qual é o nome formal desse Code Smell segundo o livro-texto de Engenharia de Software Moderna?
+**Problemas:**
+* **Falta de Legibilidade:** Lendo a chamada do método, é impossível saber o que 1, true e 2 significam sem olhar a documentação.
+* **Propensão a Erros (Bugs Silenciosos):** Como qos e priority são do tipo int, se o programador acidentalmente inverter a ordem na hora de chamar o método (passar a prioridade no lugar do QoS), o código vai compilar sem erros, mas o dispositivo IoT vai se comportar de forma errada na rede.
+* **Rigidez:** Se amanhã o protocolo de rede for atualizado e precisarmos passar um novo parâmetro, como um timeToLive (tempo de expiração), teremos que alterar a assinatura da interface, quebrando todas as classes que já implementavam esse método.
+
+
+**⚠️ Antes de alterar o código, responda brevemente no [formulário correspondente](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):**
+1. Qual é o nome formal desse Code Smell?
 2. O que aconteceria em tempo de compilação e de execução se um desenvolvedor passasse o valor de priority no lugar de qos ao chamar o método?
-3. Qual técnica de refatoração você utilizaria para resolver isso sem quebrar a coesão?
+3. Qual técnica de refatoração você utilizaria para resolver isso sem quebrar a coesão, agrupando os parâmetros adequadamente?
 
 ---
 
-### 4.1. Passo a Passo
+### 5.1. Passo a Passo
 
-**Etapa 1: Agrupando os metadados**
+**Etapa 1: Criando a estrutura de encapsulamento**
+
 Em vez de passar parâmetros soltos, vamos criar uma estrutura de dados dedicada para as configurações de rede.
-* Crie uma nova classe chamada `PublishConfig`.
-* Mova os atributos relacionados ao contexto da mensagem (deviceId, appTopic, qos, retain, priority) para dentro desta classe.
+- Crie um novo arquivo/classe chamado PublishConfig.
+- Identifique e mova os parâmetros que correspondem aos metadados da mensagem (ou seja, deviceId, appTopic, qos, retain, priority) para dentro desta classe.
+- Crie formas básicas de acesso e inicialização à classe, seguindo boas práticas
 
-**📍️ Checkpoint 1: Verifique a sua classe `PublishConfig`.**
-* Os atributos foram declarados como `private final` para garantir a imutabilidade durante o tráfego na rede (recomendado)?
+**📍️ Checkpoint 1: Verifique a sua classe `PublishConfig` (Autovalidação)**
+
+
+Verifique se o seu código seguiu as melhores práticas para sistemas distribuídos (IoT) e correção do Code Smell identificado.
+* Para garantir a resiliência em sistemas distribuídos/IoT, os atributos foram declarados com modificadores de acesso fechados (private) e com a palavra-chave que garante imutabilidade (final)?
 * Você criou um construtor que inicializa todos esses campos?
-* Os métodos Getters foram gerados? (Recomendado não criar Setters: objetos de configuração não devem ser alterados após instanciados).
-
-
-**Etapa 2: Atualizando o Contrato** <br> Agora, substitua a longa lista de parâmetros na interface original para utilizar a sua nova classe, mantendo apenas o conteúdo da mensagem (payload) separado de suas configurações (config).
-
-**📍️ Checkpoint 2 (Resultado Esperado):** A sua interface `CloudClient` deve ter ficado semelhante a esta assinatura enxuta, mantendo as exceções contratuais originais:
+* Você gerou os métodos Getters adequados? **RECOMENDADO**: em objetos de configuração rigorosos, não geramos Setters (objetos de configuração não devem ser alterados após instanciados)
 ```java
-public interface CloudClient {
-    public int publish(byte[] payload, PublishConfig config);
+public class PublishConfig {
+    // Atributos privados e imutáveis (final)
+    private final String deviceId;
+    // ... declare os outros atributos restantes
+
+    // Construtor inicializando todos os campos
+    public PublishConfig(String deviceId, /* outros parâmetros... */) {
+        this.deviceId = deviceId;
+        // ...
+    }
+
+    // Apenas Getters gerados (sem Setters!)
+    public String getDeviceId() { return deviceId; }
+    // ...
 }
 ```
+
+**Etapa 2: Atualizando o Contrato**
+
+
+Volte ao arquivo CloudClient.java.
+- Substitua a longa lista de parâmetros primitivos pelo seu novo objeto agrupador.
+- Mantenha o payload solto, pois ele é o dado bruto e não faz parte dos metadados de configuração.
+
+**📍️ Checkpoint 2: Refatoração Concluída**
+
+
+Salve os arquivos. A assinatura da sua interface agora deve estar limpa, contendo apenas o conteúdo e a classe de configuração, mantendo o restante do código:
+```java
+public interface CloudClient {
+    public int publish(byte[] payload, PublishConfig config) throws KuraException;
+}
+```
+
+Validação Final: Acesse o formulário e responda:
+1. Quais foram os principais benefícios alcançados com essa abordagem refatorada?
+2. Por que o payload, sendo um dado bruto, não faz parte dos metadados de configuração?
+3. Se o protocolo MQTT for atualizado no futuro e exigir um novo parâmetro (como timeToLive), qual arquivo precisará ser alterado e qual será o impacto nas classes que já utilizam o método publish?
 
 ---
 
@@ -162,7 +197,7 @@ public interface CloudClient {
 **Contexto:** Ao processar uma mensagem publicada pelo dispositivo, o método `processDevicePublish` roteia a ação com base no tópico da mensagem. Com a evolução do projeto, o método se transformou em uma gigantesca cascata de `if/else if`, misturando conversão de dados, processamento no banco e respostas de protocolo no mesmo lugar.
 
 **Código Base (Simplificado):**
-```
+```java
 void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
     try {
         MqttTransportAdaptor payloadAdaptor = deviceSessionCtx.getPayloadAdaptor();
@@ -246,7 +281,7 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
 
 ---
 
-## 5. Conclusão
+## 6. Conclusão
 Por fim, é importante salientar que algumas implementações podem abordar alguns code smells por opção pragmática ou decisão particular de projeto. Nesses casos, são exceções mediante a tomada de decisões claras e compreendidas.
 
 Além disso, existem ferramentas para auxiliar essa prática, como assistentes de IA, recursos e extensões em IDEs (VSCode, IntelliJ) e plataformas de análise estática (Codacy, SonarQube, CodeClimate). ENTRETANTO, entender primeiro esse procedimento é essencial para posteriormente utilizar esses artifícios para agilizar o processo, que assim será assimilado e transparente para uma validação pessoal.
