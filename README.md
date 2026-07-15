@@ -146,7 +146,6 @@ Em vez de passar parâmetros soltos, vamos criar uma estrutura de dados dedicada
 
 **📍️ Checkpoint 1: Verifique a sua classe `PublishConfig` (Autovalidação)**
 
-
 Verifique se o seu código seguiu as melhores práticas para sistemas distribuídos (IoT) e correção do Code Smell identificado.
 * Para garantir a resiliência em sistemas distribuídos/IoT, os atributos foram declarados com modificadores de acesso fechados (private) e com a palavra-chave que garante imutabilidade (final)?
 * Você criou um construtor que inicializa todos esses campos?
@@ -171,15 +170,13 @@ public class PublishConfig {
 
 **Etapa 2: Atualizando o Contrato**
 
-
 Volte ao arquivo CloudClient.java.
 - Substitua a longa lista de parâmetros primitivos pelo seu novo objeto agrupador.
 - Mantenha o payload solto, pois ele é o dado bruto e não faz parte dos metadados de configuração.
 
 **📍️ Checkpoint 2: Refatoração Concluída**
 
-
-Salve os arquivos. A assinatura da sua interface agora deve estar limpa, contendo apenas o conteúdo e a classe de configuração, mantendo o restante do código:
+Salve os arquivos. A assinatura da sua interface agora deve estar limpa, contendo apenas o conteúdo e a classe de configuração, mantendo o restante do código semelhante a isso:
 ```java
 public interface CloudClient {
     public int publish(byte[] payload, PublishConfig config) throws KuraException;
@@ -193,7 +190,7 @@ Validação Final: Acesse o formulário e responda:
 
 ---
 
-### Atividade 2: Desestruturando a "Cadeia de Comandos"
+### ➡️ Atividade 2: Desestruturando a "Cadeia de Comandos" (Projeto ThingsBoard)
 **Contexto:** Ao processar uma mensagem publicada pelo dispositivo, o método `processDevicePublish` roteia a ação com base no tópico da mensagem. Com a evolução do projeto, o método se transformou em uma gigantesca cascata de `if/else if`, misturando conversão de dados, processamento no banco e respostas de protocolo no mesmo lugar.
 
 **Código Base (Simplificado):**
@@ -203,31 +200,20 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
         MqttTransportAdaptor payloadAdaptor = deviceSessionCtx.getPayloadAdaptor();
 
         if (deviceSessionCtx.isDeviceAttributesTopic(topicName)) {
-            TransportProtos.PostAttributeMsg postAttributeMsg =
-        payloadAdaptor.convertToPostAttributes(deviceSessionCtx, mqttMsg);
-            transportService.process(deviceSessionCtx.getSessionInfo(),
-        postAttributeMsg, getMetadata(deviceSessionCtx, topicName),
-        getPubAckCallback(ctx, msgId, postAttributeMsg));
+            TransportProtos.PostAttributeMsg postAttributeMsg = payloadAdaptor.convertToPostAttributes(deviceSessionCtx, mqttMsg);
+            transportService.process(deviceSessionCtx.getSessionInfo(), postAttributeMsg, getMetadata(deviceSessionCtx, topicName), getPubAckCallback(ctx, msgId, postAttributeMsg));
 
         } else if (deviceSessionCtx.isDeviceTelemetryTopic(topicName)) {
-            TransportProtos.PostTelemetryMsg postTelemetryMsg =
-        payloadAdaptor.convertToPostTelemetry(deviceSessionCtx, mqttMsg);
-            transportService.process(deviceSessionCtx.getSessionInfo(),
-        postTelemetryMsg, getMetadata(deviceSessionCtx, topicName),
-        getPubAckCallback(ctx, msgId, postTelemetryMsg));
+            TransportProtos.PostTelemetryMsg postTelemetryMsg = payloadAdaptor.convertToPostTelemetry(deviceSessionCtx, mqttMsg);
+            transportService.process(deviceSessionCtx.getSessionInfo(), postTelemetryMsg, getMetadata(deviceSessionCtx, topicName), getPubAckCallback(ctx, msgId, postTelemetryMsg));
 
         } else if (topicName.startsWith(MqttTopics.DEVICE_RPC_RESPONSE_TOPIC)) {
-            TransportProtos.ToDeviceRpcResponseMsg rpcResponseMsg =
-        payloadAdaptor.convertToDeviceRpcResponse(deviceSessionCtx, mqttMsg,
-        MqttTopics.DEVICE_RPC_RESPONSE_TOPIC);
-            transportService.process(deviceSessionCtx.getSessionInfo(),
-        rpcResponseMsg, getPubAckCallback(ctx, msgId, rpcResponseMsg));
+            TransportProtos.ToDeviceRpcResponseMsg rpcResponseMsg = payloadAdaptor.convertToDeviceRpcResponse(deviceSessionCtx, mqttMsg, MqttTopics.DEVICE_RPC_RESPONSE_TOPIC);
+            transportService.process(deviceSessionCtx.getSessionInfo(), rpcResponseMsg, getPubAckCallback(ctx, msgId, rpcResponseMsg));
 
         } else if (topicName.equals(MqttTopics.DEVICE_CLAIM_TOPIC)) {
-            TransportProtos.ClaimDeviceMsg claimDeviceMsg =
-        payloadAdaptor.convertToClaimDevice(deviceSessionCtx, mqttMsg);
-            transportService.process(deviceSessionCtx.getSessionInfo(),
-        claimDeviceMsg, getPubAckCallback(ctx, msgId, claimDeviceMsg));
+            TransportProtos.ClaimDeviceMsg claimDeviceMsg = payloadAdaptor.convertToClaimDevice(deviceSessionCtx, mqttMsg);
+            transportService.process(deviceSessionCtx.getSessionInfo(), claimDeviceMsg, getPubAckCallback(ctx, msgId, claimDeviceMsg));
 
         } // ... O código original possui dezenas de outros "else if" sequenciais
 
@@ -237,32 +223,41 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
     }
 }
 ```
+<p style="font-size: 16px;"><sub><i>Linha 557 do arquivo CloudClient.java</i></sub></p>
 
-**Antes de alterar o código, responda brevemente:**
+
+**⚠️ Antes de alterar o código, responda brevemente no [formulário correspondente](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):**
+* Analisando as estruturas de decisão que crescem descontroladamente, quais são os dois principais Code Smells que podemos classificar neste método, segundo a literatura de refatoração?
 * O método acima fere qual princípio fundamental da Engenharia de Software (SOLID)? Justifique.
 * Identifique o padrão que se repete dentro de cada bloco condicional. Quais são as duas etapas que sempre acontecem independente do tópico?
 
-**Etapa 1: Isolando a Lógica Interna (Durante a Refatoração)** <br>
-A regra de roteamento (o fluxo de controle if/else if) não é o problema, mas sim o trabalho braçal sendo feito dentro dela. Vamos aplicar a técnica de Extração de Método.
-- Selecione o conteúdo interno do primeiro bloco if (referente aos Atributos do Dispositivo).  
-- Extraia esse bloco para um método privado chamado handleDeviceAttributes.  
+**Etapa 1: Limpando a poluição do roteador**
+O problema principal não são os condicionais em si, mas o trabalho pesado (parsing e transporte) sendo feito dentro deles. A solução recomendada é a Extração de Método.
+- Selecione todo o conteúdo interno do primeiro if (referente aos atributos do dispositivo: PostAttributeMsg).
+- Mova esse bloco de código para um novo método privado, utilizando um nome que revele sua intenção (por exemplo, "handleDeviceAttributes").
 
-📍 Checkpoint 1: <br>
-O seu novo método privado precisa receber por parâmetro as variáveis locais do método pai que ele utiliza (ctx, mqttMsg, topicName, msgId). O código dele deve ficar parecido com isso:
+📍 Checkpoint 1: Extração (Autovalidação):
+
+O compilador exigirá que você passe variáveis locais para o seu novo método. Assegure-se de que a assinatura do seu método extraído ficou limpa e está recebendo os parâmetros necessários como ctx, mqttMsg, topicName e msgId.
+Exemplo visual de uma parte do código sendo isolada:
 
 ```java
-private void handleDeviceAttributes(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
-    TransportProtos.PostAttributeMsg msg = deviceSessionCtx.getPayloadAdaptor().convertToPostAttributes(deviceSessionCtx, mqttMsg);
-    transportService.process(deviceSessionCtx.getSessionInfo(), msg, getMetadata(deviceSessionCtx, topicName), getPubAckCallback(ctx, msgId, msg));
+private void handleDeviceAttributes(/* seus parâmetros */) {
+    // Lógica isolada de PostAttributeMsg aqui...
 }
 ```
 
-**Etapa 2: Limpeza do Fluxo Principal (Depois da Refatoração)** <br>
-Repita o processo de extração para o bloco de telemetria (criando o handleDeviceTelemetry). Volte ao método original e substitua as dezenas de linhas de conversão pelas chamadas enxutas dos novos métodos.  
+**Etapa 2: Repetição e Otimização do Fluxo Principal**
+- Repita a Extração de Método para o bloco da Telemetria 
+- Repita também para o bloco RPC
 
-📍 Checkpoint 2 (Resultado Esperado): <br>
-O método principal deixou de ser um gargalo de processamento e passou a atuar como um orquestrador limpo e legível. A sua evolução deve refletir este aspecto:
+**Etapa 3: Substituição no Método "Pai"**
 
+Agora que a complexidade foi abstraída para métodos auxiliares, volte ao método principal (processDevicePublish)
+- Substitua o código poluído, que violava a responsabilidade única, pelas invocações dos seus novos métodos privados enxutos.
+
+📍 **Checkpoint 2: Refatoração Concluída**
+Verifique como o seu método processDevicePublish se tornou um "controlador". Ele agora apenas verifica o nome do tópico e delega a função, sem saber dos detalhes de implementação. 
 ```java
 void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
     try {
@@ -270,15 +265,14 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
             handleDeviceAttributes(ctx, mqttMsg, topicName, msgId);
         } else if (deviceSessionCtx.isDeviceTelemetryTopic(topicName)) {
             handleDeviceTelemetry(ctx, mqttMsg, topicName, msgId);
-        }
-        // ... demais condições mantidas de forma limpa
+        } 
+        // ... a estrutura se mantém, mas os blocos estão limpos!
     } catch (Exception e) {
-        log.warn("Failed to process...", e);
+        log.warn("[{}] Failed to process...", sessionId, e);
         ctx.close();
     }
 }
 ```
-
 ---
 
 ## 6. Conclusão
@@ -287,3 +281,5 @@ Por fim, é importante salientar que algumas implementações podem abordar algu
 Além disso, existem ferramentas para auxiliar essa prática, como assistentes de IA, recursos e extensões em IDEs (VSCode, IntelliJ) e plataformas de análise estática (Codacy, SonarQube, CodeClimate). ENTRETANTO, entender primeiro esse procedimento é essencial para posteriormente utilizar esses artifícios para agilizar o processo, que assim será assimilado e transparente para uma validação pessoal.
 
 Refatoração é uma das práticas mais fundamentais do desenvolvimento de software para evitar códigos catastróficos e que estão cada vez mais frequentes com uso deliberado de IA generativa para geração de código, sem revisão de propriedades e princípios de software que seguem as boas práticas da engenharia de software.
+
+Foi utilizado como referência o capítulo 9 do livro Engenharia de Software, de autoria do professor Marco Túlio Valente.
