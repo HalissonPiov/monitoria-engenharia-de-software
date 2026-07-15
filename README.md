@@ -188,6 +188,8 @@ Validação Final: Acesse o formulário e responda:
 2. Por que o payload, sendo um dado bruto, não faz parte dos metadados de configuração?
 3. Se o protocolo MQTT for atualizado no futuro e exigir um novo parâmetro (como timeToLive), qual arquivo precisará ser alterado e qual será o impacto nas classes que já utilizam o método publish?
 
+**💡️ Compare o resultado final do seu código com o resultado esperado no arquivo `gabarito.md`**
+
 ---
 
 ### ➡️ Atividade 2: Desestruturando a "Cadeia de Comandos" (Projeto ThingsBoard)
@@ -273,6 +275,12 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
     }
 }
 ```
+Validação Final: Salve seu progresso e responda às questões de fechamento no [formulário](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):
+1. Quais são os principais benefícios alcançados ao isolar cada operação em seu próprio método privado no que diz respeito a teste?
+2. O que acontece com a legibilidade da estrutura if / else if quando os detalhes de implementação são escondidos atrás de funções bem nomeadas?
+
+**💡️ Compare o resultado final do seu código com o resultado esperado no arquivo `gabarito.md`**
+
 ---
 
 ## 6. Conclusão
