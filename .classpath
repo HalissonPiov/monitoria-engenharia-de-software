@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+  <classpathentry kind="src" path="src/reference"/>
+  <classpathentry kind="src" path="src/exercises/activity1"/>
+  <classpathentry kind="src" path="src/exercises/activity2"/>
+  <classpathentry kind="src" path="src/refactor"/>
+  <classpathentry kind="lib" path="lib/junit-platform-console-standalone-1.10.2.jar"/>
+  <classpathentry kind="output" path="build"/>
+</classpath>
