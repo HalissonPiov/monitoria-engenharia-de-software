@@ -199,7 +199,7 @@ public class CloudClientTest {
 
 Retornou um log contendo informações de "1 tests successful"?
 
-** ✅ Ótimo! O teste foi executado e passou com sucesso!**
+**✅ Ótimo! O teste foi executado e passou com sucesso!**
 
 ### 5.2 Passo a Passo: Refatoração
 
