@@ -19,8 +19,8 @@
 <br><br>
 
 <div align="center">
-  <h1>Tutorial Prático: Refatoração</h1>
-  <p style="font-size: 12px"><strong>Linguagem Java</strong></p>
+  <h1>Tutorial Prático: Refatoração e Testes Unitários</h1>
+  <p style="font-size: 12px"><strong>Linguagem Java e JUnit 5</strong></p>
   <br>
   <p>
     <b>Disciplina:</b> Engenharia de Software &nbsp;&bull;&nbsp; 
@@ -31,7 +31,9 @@
 <br><br>
 
 ## 1. Objetivo
-O objetivo deste guia prático é ensinar os alunos a corrigir code smells comuns encontrados em sistemas IoT reais escritos em Java, migrando da etapa de identificação passiva para a aplicação ativa de transformações de design de software. Os alunos irão transformar códigos acoplados, longos e de difícil manutenção em componentes modulares, legíveis e com papéis bem definidos (coesão).
+O objetivo deste guia prático é ensinar os alunos a corrigir code smells comuns encontrados em sistemas IoT reais escritos em Java, migrando da etapa de identificação passiva para a aplicação ativa de transformações de design de software. Além disso, o tutorial introduz a prática fundamental de criar Testes de Unidade como ferramenta de verificação antes e depois dessas mudanças. Os alunos irão transformar códigos acoplados, longos e de difícil manutenção em componentes modulares, legíveis e com papéis bem definidos (coesão), sempre mantendo a integridade do código.
+
+Foi utilizado como referência o capítulo 9 do livro Engenharia de Software Moderna, de autoria do professor Marco Túlio Valente.
 
 ---
 
@@ -56,27 +58,13 @@ Para começar a prática, você precisa trazer o código-fonte para a sua máqui
    git clone <https://github.com/HalissonPiov/monitoria-engenharia-de-software.git>
    ```
 
-### 2.3 Compilar
-Como estamos utilizando o **Extension Pack for Java**, o VS Code assume o trabalho pesado de compilação para você de forma quase transparente, ideal para focar apenas na refatoração.
+### 2.3 Preparar e Executar os Testes (JUnit 5)
+A execução repetitiva e automatizada de um programa com um conjunto finito de casos é o objetivo dos testes. Neste guia, testaremos pequenas unidades de código, como uma classe.
 
-1. Ao abrir qualquer arquivo `.java`, a extensão será ativada automaticamente (você verá o ícone do Java carregando na barra inferior).
-2. O VS Code compila o código em segundo plano sempre que você salva o arquivo (`Ctrl + S`). Se a sua refatoração gerar algum erro de sintaxe, ele será imediatamente destacado com uma linha vermelha.
-3. **(Opcional)** Caso deseje compilar manualmente via terminal (por exemplo, utilizando o terminal nativo do Linux/Ubuntu ou via WSL) para isolar a verificação de erros em uma classe específica:
-   ```bash
-   javac NomeDaClasse.java
-   ```
-
-### 2.4 Executar
-Para garantir que o princípio fundamental da refatoração foi mantido (ou seja, o comportamento externo do software não foi alterado), você precisará rodar o código antes e depois das suas modificações.
-
-1. Navegue pelo painel lateral (Explorer) e abra o arquivo Java principal que contém o método `public static void main(String[] args)`.
-2. A extensão do Java adiciona automaticamente pequenos atalhos chamados **Run** e **Debug** logo acima da declaração do método `main`.
-3. Clique em **Run**.
-4. A execução será iniciada e você poderá acompanhar todos os logs, *prints* e resultados na aba `Terminal` na parte inferior da tela.
-5. **(Opcional)** Para executar diretamente pelo terminal integrado após compilar:
-   ```bash
-   java NomeDaClasse
-   ```
+1. No VS Code, certifique-se de que a extensão Extension Pack for Java está instalada, pois ela já possui suporte nativo à execução de testes do JUnit 5.
+2. Nesse repositório do tutorial, localize a pasta para testes: testtutorial/test
+3. Ao criar uma classe de teste (com o sufixo Test) e desenvolver o código seguindo o tutorial, execute os testes via terminal no diretório da pasta raiz do projeto
+4. Os comandos estão detalhados posteriormente e estão de acordo com os arquivos `run-cloudclient-test.sh` e `run-mqtthandler-test.sh`
 
 ---
 
@@ -88,6 +76,12 @@ Conforme estabelecido na literatura da Engenharia de Software Moderna (Capítulo
 * **Combate à Segunda Lei de Lehman (Complexidade Crescente):** Esta lei afirma que à medida que um programa evolui, sua complexidade interna aumenta, a menos que se dedique um trabalho ativo para reduzi-la. A refatoração é a ferramenta primária para estabilizar esse declínio, contendo o endividamento técnico.
 * **Melhoria do Desenvolvimento Futuro:** Um código limpo e livre de deformidades arquiteturais (code smells) reduz drasticamente e comprovadamente o tempo necessário para depuração e implementação de novas features pelo time.
 * **Foco em Coesão e Acoplamento:** O processo elimina redundâncias, aumenta a coesão das classes (Responsabilidade Única) e diminui o acoplamento prejudicial entre módulos.
+
+### A Importância dos Testes na Dinâmica de Refatoração
+A refatoração é uma modificação realizada em um software preservando seu comportamento e visando exclusivamente a melhoria de seu código ou projeto. Para garantir essa premissa na prática de forma automatizada, a Engenharia de Software Moderna exige uma suíte de testes passando. A dinâmica que vamos adotar requer:  
+1. **Testes Antes:** Escrever e executar testes primeiro ajuda na verificação do comportamento original antes que o próprio código sofra alterações estruturais.  
+2. **Baby Steps:** Um processo de avanço seguro, validado e iterativo, mesmo que pequeno.  
+3. **Testes Depois:** A repetição dos testes comprova que a transformação preservou o funcionamento correto.
 
 ---
 
@@ -128,14 +122,58 @@ public interface CloudClient {
 * **Rigidez:** Se amanhã o protocolo de rede for atualizado e precisarmos passar um novo parâmetro, como um timeToLive (tempo de expiração), teremos que alterar a assinatura da interface, quebrando todas as classes que já implementavam esse método.
 
 
-**⚠️ Antes de alterar o código, responda brevemente no [formulário correspondente](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):**
-1. Qual é o nome formal desse Code Smell?
+**⚠️ Antes de começar, responda brevemente:**
+1. Qual é o nome formal desse Code Smell segundo o livro-texto de Engenharia de Software Moderna?
 2. O que aconteceria em tempo de compilação e de execução se um desenvolvedor passasse o valor de priority no lugar de qos ao chamar o método?
-3. Qual técnica de refatoração você utilizaria para resolver isso sem quebrar a coesão, agrupando os parâmetros adequadamente?
+3. Qual técnica de refatoração você utilizaria para resolver isso sem quebrar a coesão?
+4. Com qual objetivo os testes de unidade executam a pequena unidade de código criada e verificada por eles?
+5. Por que adotamos a dinâmica fundamental de rodar os testes de unidade antes e depois da aplicação das alterações propostas de refatoração estrutural?  
 
 ---
 
-### 5.1. Passo a Passo
+### 5.1. Passo a Passo: Teste
+
+Para refatorar em segurança, é vital escrever os testes e executá-los em um conjunto finito de casos com o objetivo de verificar o comportamento.
+- Crie o arquivo CloudClientTest.java na sua estrutura de projeto correspondente a testes de unidade.
+- Escreva um método de teste simples estruturado em três passos conceituais e que receba a anotação @Test do framework JUnit 5.
+- Como CloudClient é uma interface, para fins deste teste, instancie uma classe de simulação e chamada local (ex: CloudClientImpl) que retorne o valor padrão de operação bem sucedida.
+
+Exemplo de Código Parcial (CloudClientTest.java):
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class CloudClientTest {
+
+    @Test
+    public void testPublishSuccess() throws Exception {
+        // Preparação
+        CloudClient client = new CloudClientImpl(); 
+        String deviceId = "device-001";
+        String appTopic = "sensors/temp";
+        byte[] payload = new byte[]{1, 2, 3};
+        int qos = 1;
+        boolean retain = true;
+        int priority = 2;
+
+        // Execução
+        int statusCode = client.publish(deviceId, appTopic, payload, qos, retain, priority);
+
+        // Verificação
+        assertEquals(200, statusCode, "O status de publicação deve ser 200 em caso de sucesso");
+    }
+}
+```
+**🧪️ Execução do teste:**
+- Abra o terminal integrado do VSCode
+- Execute o comando `./testtutorial/run-mqtthandler-test.sh`
+
+Retornou um log contendo informações de "1 tests successful"?
+
+** ✅ Ótimo! O teste foi executado e passou com sucesso!**
+
+### 5.2 Passo a Passo: Refatoração
 
 **Etapa 1: Criando a estrutura de encapsulamento**
 
@@ -190,6 +228,17 @@ Validação Final: Acesse o formulário e responda:
 
 **💡️ Compare o resultado final do seu código com o resultado esperado no arquivo `gabarito.md`**
 
+**Etapa 3: Rodando os Testes Novamente**
+
+Agora que você modificou a assinatura estrutural, o seu arquivo de teste criado na Etapa 0 passará a reclamar de erro de compilação. Essa é a garantia de acompanhamento em ação.
+1. Retorne ao arquivo CloudClientTest.java.
+2. Atualize o corpo do teste: instancie e passe o objeto PublishConfig em vez de passar os dados avulsos.
+3. Dispare a execução do teste novamente na IDE.
+
+📍️ Checkpoint 3 (Resultado Esperado): O teste modificado continuou executando e passando com sucesso (status de cor verde)?
+
+🎉️ Parabéns, você acaba de realizar uma modificação em um software de forma confiável que visou uma melhor segurança, manutenibilidade e menor acoplamento
+
 ---
 
 ### ➡️ Atividade 2: Desestruturando a "Cadeia de Comandos" (Projeto ThingsBoard)
@@ -225,13 +274,53 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
     }
 }
 ```
-<p style="font-size: 16px;"><sub><i>Linha 557 do arquivo CloudClient.java</i></sub></p>
+<p style="font-size: 16px;"><sub><i>Linha 557 do arquivo MqttTransportHandler.java</i></sub></p>
 
 
-**⚠️ Antes de alterar o código, responda brevemente no [formulário correspondente](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):**
+**⚠️ Antes de começar, responda brevemente no [formulário correspondente](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):**
 * Analisando as estruturas de decisão que crescem descontroladamente, quais são os dois principais Code Smells que podemos classificar neste método, segundo a literatura de refatoração?
 * O método acima fere qual princípio fundamental da Engenharia de Software (SOLID)? Justifique.
 * Identifique o padrão que se repete dentro de cada bloco condicional. Quais são as duas etapas que sempre acontecem independente do tópico?
+* Códigos extensos que integram dependências para bancos de dados e sistemas externos (como os observados no contexto acima) tornam os testes locais difíceis. Conforme a literatura da Engenharia de Software Moderna (Capítulo 8), quais tipos de objetos nós precisaríamos para viabilizar e isolar testes dessas dependências complexas?
+
+### 5.3 Passo a Passo: Teste
+
+Para refatorar um longo fluxo orquestrador, é essencial primeiro garantir os testes das chamadas originais.
+- Crie a classe MqttTransportHandlerTest.java com a anotação @Test do JUnit.
+- Na prática industrial, objetos especiais de reposição chamados de Mocks e Stubs seriam instanciados neste teste para simular e isolar chamadas pesadas ao contexto da sessão (deviceSessionCtx) ou serviços de persistência complexos.  
+
+Exemplo de Código Parcial (MqttTransportHandlerTest.java):
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class MqttTransportHandlerTest {
+
+    @Test
+    public void testProcessDevicePublishTelemetryFlow() {
+        MqttTransportHandler handler = new MqttTransportHandler();
+        String topicName = "v1/devices/me/telemetry"; 
+        int msgId = 1;
+        
+        // Simulação prática que utilizaria mocks e stubs na infraestrutura original
+        // handler.processDevicePublish(ctxMock, mqttMsgMock, topicName, msgId);
+        
+        // Assegurar-se-ia que a rota específica foi ativada.
+        // assertTrue(telemetryServiceMock.wasCalled());
+    }
+}
+```
+
+**🧪️ Execução do teste:**
+- Abra o terminal integrado do VSCode
+- Execute o comando `./testtutorial/run-cloudclient-test.sh`
+
+Retornou um log contendo informações de "1 tests successful"?
+
+**✅ Ótimo! O teste foi executado e passou com sucesso!**
+
+### 5.4 Passo a Passo: Refatoração
 
 **Etapa 1: Limpando a poluição do roteador**
 O problema principal não são os condicionais em si, mas o trabalho pesado (parsing e transporte) sendo feito dentro deles. A solução recomendada é a Extração de Método.
@@ -289,5 +378,3 @@ Por fim, é importante salientar que algumas implementações podem abordar algu
 Além disso, existem ferramentas para auxiliar essa prática, como assistentes de IA, recursos e extensões em IDEs (VSCode, IntelliJ) e plataformas de análise estática (Codacy, SonarQube, CodeClimate). ENTRETANTO, entender primeiro esse procedimento é essencial para posteriormente utilizar esses artifícios para agilizar o processo, que assim será assimilado e transparente para uma validação pessoal.
 
 Refatoração é uma das práticas mais fundamentais do desenvolvimento de software para evitar códigos catastróficos e que estão cada vez mais frequentes com uso deliberado de IA generativa para geração de código, sem revisão de propriedades e princípios de software que seguem as boas práticas da engenharia de software.
-
-Foi utilizado como referência o capítulo 9 do livro Engenharia de Software, de autoria do professor Marco Túlio Valente.
