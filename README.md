@@ -62,9 +62,37 @@ Para começar a prática, você precisa trazer o código-fonte para a sua máqui
 A execução repetitiva e automatizada de um programa com um conjunto finito de casos é o objetivo dos testes. Neste guia, testaremos pequenas unidades de código, como uma classe.
 
 1. No VS Code, certifique-se de que a extensão Extension Pack for Java está instalada, pois ela já possui suporte nativo à execução de testes do JUnit 5.
-2. Nesse repositório do tutorial, localize a pasta para testes: testtutorial/test
+2. Nesse repositório do tutorial, localize a pasta para testes nas subpastas de: src/exercises/
 3. Ao criar uma classe de teste (com o sufixo Test) e desenvolver o código seguindo o tutorial, execute os testes via terminal no diretório da pasta raiz do projeto
 4. Os comandos estão detalhados posteriormente e estão de acordo com os arquivos `run-cloudclient-test.sh` e `run-mqtthandler-test.sh`
+
+### 2.4 Estrutura Base do Tutorial
+Para reduzir a curva de aprendizagem, o repositório já traz a infraestrutura mínima necessária para executar os testes via terminal.
+
+**Arquivos que já fazem parte da estrutura base do tutorial:**
+
+- **Testes a serem rodados via terminal:**
+* `scripts/run-cloudclient-test.sh`
+* `scripts/run-mqtthandler-test.sh`
+
+**Arquivos isolados dependentes do contexto de cada projeto, criados para abstrair configurações do ambiente e focar na construção dos testes:**
+* `src/exercises/activity1/CloudClient.java`
+* `src/exercises/activity1/CloudClientImpl.java`
+* `src/exercises/activity1/KuraException.java`
+* `src/exercises/activity2/TelemetryService.java`
+* `src/exercises/activity2/TelemetryServiceMock.java`
+* `src/exercises/activity2/MqttTransportHandler.java`
+* `lib/junit-platform-console-standalone-1.10.2.jar`
+
+**Arquivos que o aluno deve desenvolver ou alterar durante o tutorial:**
+- **Atividade 1 e 2:**
+* `src/refactor/PublishConfig.java`
+* `src/exercises/activity1/CloudClientTest.java`
+* `src/reference/MqttTransportHandler.java`
+* `src/exercises/activity2/MqttTransportHandlerTest.java`
+
+**Arquivos gerados durante a execução:**
+* `build/`
 
 ---
 
@@ -166,8 +194,8 @@ public class CloudClientTest {
 }
 ```
 **🧪️ Execução do teste:**
-- Abra o terminal integrado do VSCode
-- Execute o comando `./testtutorial/run-mqtthandler-test.sh`
+- Abra o terminal integrado do VSCode na pasta raiz do projeto
+- Execute o comando `./scripts/run-cloudclient-test.sh`
 
 Retornou um log contendo informações de "1 tests successful"?
 
@@ -313,8 +341,8 @@ public class MqttTransportHandlerTest {
 ```
 
 **🧪️ Execução do teste:**
-- Abra o terminal integrado do VSCode
-- Execute o comando `./testtutorial/run-cloudclient-test.sh`
+- Abra o terminal integrado do  na pasta raiz do projeto
+- Execute o comando `./scripts/run-mqtthandler-test.sh`
 
 Retornou um log contendo informações de "1 tests successful"?
 
