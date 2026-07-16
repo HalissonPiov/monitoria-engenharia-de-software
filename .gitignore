@@ -1,0 +1,8 @@
+# Artefatos gerados
+build/
+*.class
+
+# Pastas de compilação antigas
+.out-test/
+.out-test-mqtt/
+bin/
