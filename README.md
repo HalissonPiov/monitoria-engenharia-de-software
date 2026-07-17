@@ -263,9 +263,9 @@ Agora que você modificou a assinatura estrutural, o seu arquivo de teste criado
 2. Atualize o corpo do teste: instancie e passe o objeto PublishConfig em vez de passar os dados avulsos.
 3. Dispare a execução do teste novamente na IDE.
 
-📍️ Checkpoint 3 (Resultado Esperado): O teste modificado continuou executando e passando com sucesso (status de cor verde)?
+**📍️ Checkpoint 3 (Resultado Esperado): O teste modificado continuou executando e passando com sucesso (status de cor verde)?**
 
-🎉️ Parabéns, você acaba de realizar uma modificação em um software de forma confiável que visou uma melhor segurança, manutenibilidade e menor acoplamento
+🎉️ Parabéns! Você acaba de realizar uma modificação em um software de forma confiável que visou uma melhor segurança, manutenibilidade e menor acoplamento
 
 ---
 
@@ -355,7 +355,7 @@ O problema principal não são os condicionais em si, mas o trabalho pesado (par
 - Selecione todo o conteúdo interno do primeiro if (referente aos atributos do dispositivo: PostAttributeMsg).
 - Mova esse bloco de código para um novo método privado, utilizando um nome que revele sua intenção (por exemplo, "handleDeviceAttributes").
 
-📍 Checkpoint 1: Extração (Autovalidação):
+**📍 Checkpoint 1: Extração (Autovalidação):**
 
 O compilador exigirá que você passe variáveis locais para o seu novo método. Assegure-se de que a assinatura do seu método extraído ficou limpa e está recebendo os parâmetros necessários como ctx, mqttMsg, topicName e msgId.
 Exemplo visual de uma parte do código sendo isolada:
@@ -395,6 +395,14 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
 Validação Final: Salve seu progresso e responda às questões de fechamento no [formulário](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):
 1. Quais são os principais benefícios alcançados ao isolar cada operação em seu próprio método privado no que diz respeito a teste?
 2. O que acontece com a legibilidade da estrutura if / else if quando os detalhes de implementação são escondidos atrás de funções bem nomeadas?
+
+**Etapa 3: Validando as Extrações via Testes**
+Para atestar que nenhum dos blocos de if perdeu referências em suas conversões na Etapa 2, o progresso seguro deve ser executado.
+- Retorne e execute a classe MqttTransportHandlerTest.java.
+
+**📍 Checkpoint 3: O seu teste de roteamento de telemetria e os demais retornaram executando e passando com sucesso após as modificações que aplicamos?**
+
+🎉️ Parabéns! você acaba de realizar uma modificação que garantiu um código limpo e coeso, de forma segura e validada.
 
 **💡️ Compare o resultado final do seu código com o resultado esperado no arquivo `gabarito.md`**
 
