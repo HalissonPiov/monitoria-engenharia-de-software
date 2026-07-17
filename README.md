@@ -151,7 +151,7 @@ public interface CloudClient {
 * **Rigidez:** Se amanhã o protocolo de rede for atualizado e precisarmos passar um novo parâmetro, como um timeToLive (tempo de expiração), teremos que alterar a assinatura da interface, quebrando todas as classes que já implementavam esse método.
 
 
-**⚠️ Antes de começar, responda brevemente:**
+**⚠️ Antes de começar, responda brevemente no [formulário correspondente](https://forms.gle/4fNz6FHpGGCzW5vu5):**
 1. Qual é o nome formal desse Code Smell segundo o livro-texto de Engenharia de Software Moderna?
 2. O que aconteceria em tempo de compilação e de execução se um desenvolvedor passasse o valor de priority no lugar de qos ao chamar o método?
 3. Qual técnica de refatoração você utilizaria para resolver isso sem quebrar a coesão?
@@ -250,7 +250,7 @@ public interface CloudClient {
 }
 ```
 
-Validação Final: Acesse o formulário e responda:
+**⚠️ Validação Final: Acesse o formulário e responda:**
 1. Quais foram os principais benefícios alcançados com essa abordagem refatorada?
 2. Por que o payload, sendo um dado bruto, não faz parte dos metadados de configuração?
 3. Se o protocolo MQTT for atualizado no futuro e exigir um novo parâmetro (como timeToLive), qual arquivo precisará ser alterado e qual será o impacto nas classes que já utilizam o método publish?
@@ -397,7 +397,7 @@ void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg,
     }
 }
 ```
-Validação Final: Salve seu progresso e responda às questões de fechamento no [formulário](https://docs.google.com/forms/d/1-wFwycXEUJrAVtQzR05qPgPee4qJppD0NrG-pXYv1yY/edit):
+**⚠️ Validação Final: Salve seu progresso e responda às questões de fechamento no [formulário](https://forms.gle/4fNz6FHpGGCzW5vu5):**
 1. Quais são os principais benefícios alcançados ao isolar cada operação em seu próprio método privado no que diz respeito a teste?
 2. O que acontece com a legibilidade da estrutura if / else if quando os detalhes de implementação são escondidos atrás de funções bem nomeadas?
 
