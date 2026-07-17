@@ -50,6 +50,8 @@ Para começar a prática, você precisa trazer o código-fonte para a sua máqui
 
 **Recomendado**: Editor **VS Code** + Extensão **Extension Pack for Java** + **JDK** (obrigatório)
 
+> **Observação sobre outras IDEs:** Este repositório já vem com arquivos de configuração embutidos (`.vscode`, `.classpath`, `.project`) para oferecer uma experiência direta e prática no **VS Code** (e Eclipse). Caso prefira utilizar o **IntelliJ IDEA**, **NetBeans** ou outros editores, será necessário configurar o caminho do *source* (`src/`) e *output* (`build/`) manualmente na sua IDE, ou você pode simplesmente ignorar a configuração da IDE e focar 100% na execução via linha de comando no terminal integrada fornecida por este tutorial.
+
 1. Abra o **VS Code**.
 2. Clique com o botão direito no workspace ou vá no menu direito superior em `File > Add Folder to Workspace...` e selecione uma pasta onde deseja salvar o repositório do tutorial prático e clique em `Add`
 3. Inicie o terminal integrado do editor no caminho da pasta selecionada (clique com o botão direito em cima da pasta e vá em `Open in Integrated Terminal` ou vá no menu superior em `Terminal > New Terminal` e selecione a pasta)
