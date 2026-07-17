@@ -32,8 +32,7 @@
 
 ## 1. Objetivo
 O objetivo deste guia prático é ensinar os alunos a corrigir code smells comuns encontrados em sistemas IoT reais escritos em Java, migrando da etapa de identificação passiva para a aplicação ativa de transformações de design de software. Além disso, o tutorial introduz a prática fundamental de criar Testes de Unidade como ferramenta de verificação antes e depois dessas mudanças. Os alunos irão transformar códigos acoplados, longos e de difícil manutenção em componentes modulares, legíveis e com papéis bem definidos (coesão), sempre mantendo a integridade do código.
-
-Foi utilizado como referência o capítulo 9 do livro Engenharia de Software Moderna, de autoria do professor Marco Túlio Valente.
+> Foi utilizado como referência o capítulo 9 do livro Engenharia de Software Moderna, de autoria do professor Marco Túlio Valente.
 
 ---
 
@@ -87,7 +86,7 @@ Para reduzir a curva de aprendizagem, o repositório já traz a infraestrutura m
 * `lib/junit-platform-console-standalone-1.10.2.jar`
 
 **Arquivos que o aluno deve desenvolver ou alterar durante o tutorial:**
-- **Atividade 1 e 2:**
+- **Atividade 1 e 2 (refatoração e teste):**
 * `src/refactor/PublishConfig.java`
 * `src/exercises/activity1/CloudClientTest.java`
 * `src/reference/MqttTransportHandler.java`
@@ -110,7 +109,7 @@ Conforme estabelecido na literatura da Engenharia de Software Moderna (Capítulo
 ### A Importância dos Testes na Dinâmica de Refatoração
 A refatoração é uma modificação realizada em um software preservando seu comportamento e visando exclusivamente a melhoria de seu código ou projeto. Para garantir essa premissa na prática de forma automatizada, a Engenharia de Software Moderna exige uma suíte de testes passando. A dinâmica que vamos adotar requer:  
 1. **Testes Antes:** Escrever e executar testes primeiro ajuda na verificação do comportamento original antes que o próprio código sofra alterações estruturais.  
-2. **Baby Steps:** Um processo de avanço seguro, validado e iterativo, mesmo que pequeno.  
+2. **"Baby Steps":** Um processo de avanço seguro, validado e iterativo, mesmo que pequeno.  
 3. **Testes Depois:** A repetição dos testes comprova que a transformação preservou o funcionamento correto.
 
 ---
@@ -256,8 +255,6 @@ Validação Final: Acesse o formulário e responda:
 2. Por que o payload, sendo um dado bruto, não faz parte dos metadados de configuração?
 3. Se o protocolo MQTT for atualizado no futuro e exigir um novo parâmetro (como timeToLive), qual arquivo precisará ser alterado e qual será o impacto nas classes que já utilizam o método publish?
 
-**💡️ Compare o resultado final do seu código com o resultado esperado no arquivo `gabarito.md`**
-
 **Etapa 3: Rodando os Testes Novamente**
 
 Agora que você modificou a assinatura estrutural, o seu arquivo de teste criado na Etapa 0 passará a reclamar de erro de compilação. Essa é a garantia de acompanhamento em ação.
@@ -268,6 +265,12 @@ Agora que você modificou a assinatura estrutural, o seu arquivo de teste criado
 **📍️ Checkpoint 3 (Resultado Esperado): O teste modificado continuou executando e passando com sucesso (status de cor verde)?**
 
 🎉️ Parabéns! Você acaba de realizar uma modificação em um software de forma confiável que visou uma melhor segurança, manutenibilidade e menor acoplamento
+
+<br>
+
+**💡️ Compare o resultado final do seu código com o resultado esperado no arquivo `gabarito.md`**
+
+<br>
 
 ---
 
@@ -406,7 +409,11 @@ Para atestar que nenhum dos blocos de if perdeu referências em suas conversões
 
 🎉️ Parabéns! você acaba de realizar uma modificação que garantiu um código limpo e coeso, de forma segura e validada.
 
+<br>
+
 **💡️ Compare o resultado final do seu código com o resultado esperado no arquivo `gabarito.md`**
+
+<br>
 
 ---
 
