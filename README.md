@@ -56,7 +56,7 @@ Para começar a prática, você precisa trazer o código-fonte para a sua máqui
 3. Inicie o terminal integrado do editor no caminho da pasta selecionada (clique com o botão direito em cima da pasta e vá em `Open in Integrated Terminal` ou vá no menu superior em `Terminal > New Terminal` e selecione a pasta)
 3. Com o terminal aberto no diretório da pasta, faça o clone do repositório base utilizando o Git:
    ```bash
-   git clone <https://github.com/HalissonPiov/monitoria-engenharia-de-software.git>
+   git clone https://github.com/HalissonPiov/monitoria-engenharia-de-software.git
    ```
 
 ### 2.3 Preparar e Executar os Testes (JUnit 5)
