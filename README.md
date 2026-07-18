@@ -76,14 +76,15 @@ Para reduzir a curva de aprendizagem, o repositório já traz a infraestrutura m
 * `scripts/run-cloudclient-test.sh`
 * `scripts/run-mqtthandler-test.sh`
 
-**Arquivos isolados dependentes do contexto de cada projeto, criados para abstrair configurações do ambiente e focar na construção dos testes:**
+**Arquivos Dependentes do Projeto:**
+> Arquivos dependentes dos projetos originais que foram isolados na pasta de exercícios, para abstrair a preparação do ambiente e focar na construção dos testes
 * `src/exercises/activity1/CloudClient.java`
 * `src/exercises/activity1/CloudClientImpl.java`
 * `src/exercises/activity1/KuraException.java`
 * `src/exercises/activity2/TelemetryService.java`
 * `src/exercises/activity2/TelemetryServiceMock.java`
 * `src/exercises/activity2/MqttTransportHandler.java`
-* `lib/junit-platform-console-standalone-1.10.2.jar`
+* `lib/junit-platform-console-standalone-1.10.2.jar` (biblioteca do JUnit 5)
 
 **Arquivos que o aluno deve desenvolver ou alterar durante o tutorial:**
 - **Atividade 1 e 2 (refatoração e teste):**
