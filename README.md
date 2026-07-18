@@ -72,7 +72,7 @@ Para reduzir a curva de aprendizagem, o repositório já traz a infraestrutura m
 
 **Arquivos que já fazem parte da estrutura base do tutorial:**
 
-- **Testes a serem rodados via terminal:**
+- **Scripts dos testes a serem rodados via terminal:**
 * `scripts/run-cloudclient-test.sh`
 * `scripts/run-mqtthandler-test.sh`
 
