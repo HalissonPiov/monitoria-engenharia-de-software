@@ -171,7 +171,33 @@ public class MqttTransportHandlerTest {
 ```
 
 **2. Refatoração do Arquivo `MqttTransportHandler.java`:**
-No contexto do código-base real e completo referenciado (ThingsBoard), a aplicação da Extração de Método resultaria na seguinte estrutura limpa:
+> **OBS:** O `README.md` exibe conceitualmente o trecho denso e complexo do repositório do ThingsBoard original. Para compilar e testar localmente na sua máquina (onde as bibliotecas do ThingsBoard não estão presentes), utilizamos uma versão **simplificada** desse arquivo.
+
+**A) Prática (Código Simplificado para Teste Local):**
+Esta é a versão que deve constar no seu arquivo real `src/exercises/activity2/MqttTransportHandler.java` para que o teste passe com sucesso:
+
+```java
+public class MqttTransportHandler {
+    private final TelemetryService telemetryService;
+
+    public MqttTransportHandler(TelemetryService telemetryService) {
+        this.telemetryService = telemetryService;
+    }
+
+    public void processDevicePublish(Object ctx, Object mqttMsg, String topicName, int msgId) {
+        if ("v1/devices/me/telemetry".equals(topicName)) {
+            handleDeviceTelemetry(topicName, msgId);
+        }
+    }
+
+    private void handleDeviceTelemetry(String topicName, int msgId) {
+        telemetryService.recordTelemetry(topicName, msgId);
+    }
+}
+```
+
+**B) Resposta Teórica (Contexto Original/Completo):**
+No contexto do código-base real e completo referenciado no README, a aplicação da Extração de Método resultaria na seguinte estrutura limpa:
 
 ```java
 void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
