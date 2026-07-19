@@ -1,21 +1,4 @@
-<table align="center" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; max-width: 100%;">
-  <tr>
-    <td align="right" style="padding-right: 30px; width: 50%;">
-      <img src="./img/ufop-logo.jpg" height="250" style="object-fit: contain;" alt="Logo UFOP">
-    </td>
-      <td align="left" style="padding-left: 30px; width: 50%;">
-        <img src="./img/logo-lecomp.png" width="300" style="object-fit: contain;" alt="Logo LECOMP">
-    </td>
-  </tr>
 
-  <tr>
-    <td colspan="2" align="center" style="padding-top: 25px;">
-      <p style="font-size: 16px;"><sub><i>Programa de Monitoria 2026.1</i></sub></p>
-    </td>
-  </tr>
-</table>
-
-<br><br>
 
 <div align="center">
   <h1>Gabarito do Tutorial Prático: Refatoração e Testes Unitários</h1>
@@ -161,7 +144,34 @@ public class CloudClientTest {
 
 ### 2.3 Prática de Código: Atividade 2
 
-**Refatoração do Arquivo `MqttTransportHandler.java`:**
+**1. Criação e Execução do Teste Original (`MqttTransportHandlerTest.java`):**
+Para viabilizar o teste localmente e isolar o ambiente, utilizamos a versão simplificada do código juntamente com um Mock:
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class MqttTransportHandlerTest {
+
+    @Test
+    public void testProcessDevicePublishTelemetryFlow() {
+        // Preparação
+        TelemetryServiceMock telemetryServiceMock = new TelemetryServiceMock();
+        MqttTransportHandler handler = new MqttTransportHandler(telemetryServiceMock);
+        String topicName = "v1/devices/me/telemetry"; 
+        int msgId = 1;
+        
+        // Execução (ctx e mqttMsg como null para focar no roteamento por tópico)
+        handler.processDevicePublish(null, null, topicName, msgId);
+        
+        // Verificação
+        assertTrue(telemetryServiceMock.wasCalled(), "O mock deveria ter sido chamado indicando o roteamento correto");
+    }
+}
+```
+
+**2. Refatoração do Arquivo `MqttTransportHandler.java`:**
+No contexto do código-base real e completo referenciado (ThingsBoard), a aplicação da Extração de Método resultaria na seguinte estrutura limpa:
 
 ```java
 void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
