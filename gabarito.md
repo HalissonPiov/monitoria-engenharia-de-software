@@ -150,22 +150,50 @@ Para viabilizar o teste localmente e isolar o ambiente, utilizamos a versão sim
 ```java
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MqttTransportHandlerTest {
 
     @Test
+    public void testProcessDevicePublishAttributesFlow() {
+        TelemetryServiceMock telemetryServiceMock = new TelemetryServiceMock();
+        MqttTransportHandler handler = new MqttTransportHandler(telemetryServiceMock);
+        String topicName = "v1/devices/me/attributes"; 
+        int msgId = 1;
+        
+        handler.processDevicePublish(null, null, topicName, msgId);
+        
+        assertTrue(telemetryServiceMock.wasAttributesCalled(), "O fluxo de atributos deveria ter sido chamado");
+        assertFalse(telemetryServiceMock.wasCalled(), "O fluxo de telemetria nao deveria ser chamado para tópico de atributos");
+        assertFalse(telemetryServiceMock.wasRpcCalled(), "O fluxo RPC nao deveria ser chamado para tópico de atributos");
+    }
+
+    @Test
     public void testProcessDevicePublishTelemetryFlow() {
-        // Preparação
         TelemetryServiceMock telemetryServiceMock = new TelemetryServiceMock();
         MqttTransportHandler handler = new MqttTransportHandler(telemetryServiceMock);
         String topicName = "v1/devices/me/telemetry"; 
-        int msgId = 1;
+        int msgId = 2;
         
-        // Execução (ctx e mqttMsg como null para focar no roteamento por tópico)
         handler.processDevicePublish(null, null, topicName, msgId);
         
-        // Verificação
-        assertTrue(telemetryServiceMock.wasCalled(), "O mock deveria ter sido chamado indicando o roteamento correto");
+        assertTrue(telemetryServiceMock.wasCalled(), "O fluxo de telemetria deveria ter sido chamado");
+        assertFalse(telemetryServiceMock.wasAttributesCalled(), "O fluxo de atributos nao deveria ser chamado para tópico de telemetria");
+        assertFalse(telemetryServiceMock.wasRpcCalled(), "O fluxo RPC nao deveria ser chamado para tópico de telemetria");
+    }
+
+    @Test
+    public void testProcessDevicePublishRpcFlow() {
+        TelemetryServiceMock telemetryServiceMock = new TelemetryServiceMock();
+        MqttTransportHandler handler = new MqttTransportHandler(telemetryServiceMock);
+        String topicName = "v1/devices/me/rpc/request/123"; 
+        int msgId = 3;
+        
+        handler.processDevicePublish(null, null, topicName, msgId);
+        
+        assertTrue(telemetryServiceMock.wasRpcCalled(), "O fluxo de RPC deveria ter sido chamado");
+        assertFalse(telemetryServiceMock.wasAttributesCalled(), "O fluxo de atributos nao deveria ser chamado para tópico RPC");
+        assertFalse(telemetryServiceMock.wasCalled(), "O fluxo de telemetria nao deveria ser chamado para tópico RPC");
     }
 }
 ```
@@ -174,7 +202,7 @@ public class MqttTransportHandlerTest {
 > **OBS:** O `README.md` exibe conceitualmente o trecho denso e complexo do repositório do ThingsBoard original. Para compilar e testar localmente na sua máquina (onde as bibliotecas do ThingsBoard não estão presentes), utilizamos uma versão **simplificada** desse arquivo.
 
 **A) Prática (Código Simplificado para Teste Local):**
-Esta é a versão que deve constar no seu arquivo real `src/exercises/activity2/MqttTransportHandler.java` para que o teste passe com sucesso:
+Esta é a versão que deve constar no seu arquivo real `src/exercises/activity2/MqttTransportHandler.java` contemplando a refatoração dos blocos de Atributos, Telemetria e RPC para que o teste passe com sucesso:
 
 ```java
 public class MqttTransportHandler {
@@ -185,19 +213,32 @@ public class MqttTransportHandler {
     }
 
     public void processDevicePublish(Object ctx, Object mqttMsg, String topicName, int msgId) {
-        if ("v1/devices/me/telemetry".equals(topicName)) {
+        if ("v1/devices/me/attributes".equals(topicName)) {
+            handleDeviceAttributes(topicName, msgId);
+        } else if ("v1/devices/me/telemetry".equals(topicName)) {
             handleDeviceTelemetry(topicName, msgId);
+        } else if (topicName.startsWith("v1/devices/me/rpc")) {
+            handleDeviceRpc(topicName, msgId);
         }
+    }
+
+    private void handleDeviceAttributes(String topicName, int msgId) {
+        telemetryService.processAttributes(topicName, msgId);
     }
 
     private void handleDeviceTelemetry(String topicName, int msgId) {
         telemetryService.recordTelemetry(topicName, msgId);
     }
+
+    private void handleDeviceRpc(String topicName, int msgId) {
+        telemetryService.processRpc(topicName, msgId);
+    }
 }
 ```
+*Nota:* você poderia facilmente continuar repetindo essa mesma estrutura e padrão de separação para as demais funções (como Device Claim) caso fossem integradas ao serviço mockado.
 
 **B) Resposta Teórica (Contexto Original/Completo):**
-No contexto do código-base real e completo referenciado no README, a aplicação da Extração de Método resultaria na seguinte estrutura limpa:
+A título de teoria, no contexto do código-base real e completo referenciado no README, a aplicação da Extração de Método resultaria na seguinte estrutura limpa:
 
 ```java
 void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {

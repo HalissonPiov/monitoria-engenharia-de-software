@@ -379,6 +379,7 @@ private void handleDeviceAttributes(/* seus parâmetros */) {
 **Etapa 2: Repetição e Otimização do Fluxo Principal**
 - Repita a Extração de Método para o bloco da Telemetria 
 - Repita também para o bloco RPC
+- **Sugestão:** A título de exercício extra, você também pode aplicar essa mesma lógica de separação para funcionalidades como Requisição de Posse de Dispositivo (Device Claim), seguindo o mesmo padrão estrutural.
 
 **Etapa 3: Substituição no Método "Pai"**
 
