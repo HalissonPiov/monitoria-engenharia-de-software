@@ -14,10 +14,12 @@ fi
 rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 
-javac -cp "$JUNIT_JAR" -d "$OUT_DIR" \
+# Compila as classes originais e o teste.
+# O -sourcepath avisa ao compilador para procurar dependências (como o novo MqttTransportHandler) na pasta refactor.
+javac -cp "$JUNIT_JAR" -d "$OUT_DIR" -sourcepath "$ROOT_DIR/src" \
   "$ROOT_DIR/src/exercises/activity2/TelemetryService.java" \
   "$ROOT_DIR/src/exercises/activity2/TelemetryServiceMock.java" \
   "$ROOT_DIR/src/exercises/activity2/MqttTransportHandler.java" \
   "$ROOT_DIR/src/exercises/activity2/MqttTransportHandlerTest.java"
 
-java -jar "$JUNIT_JAR" execute --class-path "$OUT_DIR" --select-class MqttTransportHandlerTest
+java -jar "$JUNIT_JAR" execute --class-path "$OUT_DIR" --select-class exercises.activity2.MqttTransportHandlerTest

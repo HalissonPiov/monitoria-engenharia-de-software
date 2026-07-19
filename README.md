@@ -88,9 +88,9 @@ Para reduzir a curva de aprendizagem, o repositório já traz a infraestrutura m
 
 **Arquivos que o aluno deve desenvolver ou alterar durante o tutorial:**
 - **Atividade 1 e 2 (refatoração e teste):**
-* `src/refactor/PublishConfig.java`
+* `src/exercises/activity1/refactor/PublishConfig.java`
 * `src/exercises/activity1/CloudClientTest.java`
-* `src/reference/MqttTransportHandler.java`
+* `src/exercises/activity2/refactor/MqttTransportHandler.java`
 * `src/exercises/activity2/MqttTransportHandlerTest.java`
 
 **Arquivos gerados durante a execução:**
@@ -256,16 +256,20 @@ public interface CloudClient {
 2. Por que o payload, sendo um dado bruto, não faz parte dos metadados de configuração?
 3. Se o protocolo MQTT for atualizado no futuro e exigir um novo parâmetro (como timeToLive), qual arquivo precisará ser alterado e qual será o impacto nas classes que já utilizam o método publish?
 
-**Etapa 3: Rodando os Testes Novamente**
+**Etapa 3: Ajustando as Dependências**
 
-Agora que você modificou a assinatura estrutural, o seu arquivo de teste criado na Etapa 0 passará a reclamar de erro de compilação. Essa é a garantia de acompanhamento em ação.
-1. Retorne ao arquivo CloudClientTest.java.
-2. Atualize o corpo do teste: instancie e passe o objeto PublishConfig em vez de passar os dados avulsos.
-3. Dispare a execução do teste novamente na IDE.
+Agora que você modificou a assinatura estrutural da interface, todas as classes que a implementam e os clientes que a utilizam passarão a apresentar erro de compilação. Essa é a garantia de acompanhamento em ação, evidenciando que a alteração de um contrato afeta as suas implementações.
+1. **Ajustando a Implementação:** Acesse o arquivo `CloudClientImpl.java` e atualize a assinatura do método `publish` para que ele volte a respeitar o novo contrato da interface (recebendo `byte[] payload` e `PublishConfig config` em vez dos parâmetros soltos originais).
+2. **Ajustando o Cliente (Teste):** Retorne ao arquivo `CloudClientTest.java`. Atualize o corpo do teste: instancie e passe o objeto `PublishConfig` em vez de passar os dados avulsos na chamada do método `publish()`.
 
-**📍️ Checkpoint 3 (Resultado Esperado): O teste modificado continuou executando e passando com sucesso (status de cor verde)?**
+**Etapa 4: Validação e Teste Final**
 
-🎉️ Parabéns! Você acaba de realizar uma modificação em um software de forma confiável que visou uma melhor segurança, manutenibilidade e menor acoplamento
+Agora que as dependências foram ajustadas para a nova estrutura, é hora de provar que o comportamento se manteve intacto.
+1. Dispare a execução do teste novamente no terminal executando `./scripts/run-cloudclient-test.sh`.
+
+**📍️ Checkpoint 3 (Resultado Esperado): O teste modificado continuou executando e passando com sucesso (retornou "1 tests successful")?**
+
+🎉️ Parabéns! Você acaba de realizar uma modificação em um software de forma confiável que visou uma melhor segurança, manutenibilidade e menor acoplamento.
 
 <br>
 

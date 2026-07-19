@@ -14,7 +14,9 @@ fi
 rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 
-javac -cp "$JUNIT_JAR" -d "$OUT_DIR" \
+# Compila as classes originais e o teste. 
+# O -sourcepath avisa ao compilador para procurar dependências (como a classe PublishConfig) na pasta refactor.
+javac -cp "$JUNIT_JAR" -d "$OUT_DIR" -sourcepath "$ROOT_DIR/src:$ROOT_DIR/src/exercises/activity1/refactor" \
   "$ROOT_DIR/src/exercises/activity1/KuraException.java" \
   "$ROOT_DIR/src/exercises/activity1/CloudClient.java" \
   "$ROOT_DIR/src/exercises/activity1/CloudClientImpl.java" \
