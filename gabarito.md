@@ -4,10 +4,7 @@
   <h1>Gabarito do Tutorial Prático: Refatoração e Testes Unitários</h1>
   <p style="font-size: 12px"><strong>Resoluções das Atividades Teóricas e Práticas</strong></p>
   <br>
-  <p>
-    <b>Disciplina:</b> Engenharia de Software &nbsp;&bull;&nbsp; 
-    <b>Autor:</b> Hálisson Piovezana
-  </p>
+
 </div>
 
 <br><br>
@@ -27,10 +24,10 @@ Este documento contém as respostas esperadas para as perguntas teóricas e a im
 **2. O que aconteceria em tempo de compilação e de execução se um desenvolvedor passasse o valor de priority no lugar de qos ao chamar o método?**  
 **Resposta:** 
 - **Tempo de compilação:** O código compilaria perfeitamente, sem erros, pois tanto `priority` quanto `qos` são do tipo primitivo `int`.
-- **Tempo de execução:** Ocorreria um comportamento anômalo silencioso (*bug*), fazendo com que o envio da telemetria assumisse prioridade ou Qualidade de Serviço (*QoS*) indevida, podendo impactar a infraestrutura de rede e perda de dados sem apontar erros explícitos.
+- **Tempo de execução:** Ocorreria um bug pelo erro semântico, fazendo com que o envio da telemetria assumisse prioridade ou Qualidade de Serviço (*QoS*) indevida, podendo impactar a infraestrutura de rede e perda de dados sem apontar erros explícitos.
 
 **3. Qual técnica de refatoração você utilizaria para resolver isso sem quebrar a coesão?**  
-**Resposta:** Introdução de Objeto de Parâmetro (*Introduce Parameter Object*), encapsulando os diversos parâmetros em uma estrutura/classe específica de configurações.
+**Resposta:** Introdução de Objeto de Parâmetro, encapsulando os diversos parâmetros em uma estrutura/classe específica de configurações.
 
 **4. Com qual objetivo os testes de unidade executam a pequena unidade de código criada e verificada por eles?**  
 **Resposta:** Para assegurar que as funções de menor nível operam de forma correta e isolada, verificando o comportamento daquele pequeno bloco ou classe contra diferentes valores de entrada e cenários esperados.
@@ -127,18 +124,18 @@ public class CloudClientTest {
 - 1ª Etapa: Conversão de formato do payload pelo *Adaptor* (ex: `payloadAdaptor.convertToPostAttributes(...)`).
 - 2ª Etapa: A chamada de roteamento final e persistência enviando o conteúdo convertido (ex: `transportService.process(...)`).
 
-**4. Códigos extensos que integram dependências para bancos de dados e sistemas externos (como os observados no contexto acima) tornam os testes locais difíceis. Conforme a literatura da Engenharia de Software Moderna (Capítulo 8), quais tipos de objetos nós precisaríamos para viabilizar e isolar testes dessas dependências complexas?**  
-**Resposta:** Os objetos dublês de testes (*Test Doubles*), mais comumente **Mocks** ou **Stubs**, capazes de simular injeções de serviços de banco de dados e APIs externas sem executar o processo verdadeiro em ambiente de teste local.
+**4. Códigos extensos que integram dependências para bancos de dados e sistemas externos (como os observados no contexto acima) tornam os testes locais difíceis. Quais tipos de objetos nós precisaríamos para viabilizar e isolar testes dessas dependências complexas?**  
+**Resposta:** Os objetos dublês de testes: mais comumente **Mocks** ou **Stubs**. São capazes de simular injeções de serviços de banco de dados e APIs externas sem executar o processo verdadeiro em ambiente de teste local.
 
 ---
 
 ### 2.2 Respostas da Validação Final
 
 **1. Quais são os principais benefícios alcançados ao isolar cada operação em seu próprio método privado no que diz respeito a teste?**  
-**Resposta:** Testabilidade ampliada através do isolamento. Permite validar e encontrar com precisão bugs específicos atrelados unicamente ao processamento de determinado tipo de operação, sem se envolver no emaranhado da grande cadeia decisória de forma intrínseca.
+**Resposta:** Testabilidade ampliada através do isolamento. Permite validar e encontrar com precisão bugs específicos atrelados unicamente ao processamento de determinado tipo de operação, sem se envolver na estrutura de decisão.
 
 **2. O que acontece com a legibilidade da estrutura if / else if quando os detalhes de implementação são escondidos atrás de funções bem nomeadas?**  
-**Resposta:** Ela se transforma em uma leitura clara e declarativa (auto-documentada), onde o código diz *o que* está fazendo de maneira fluída (ex: "se é tópico de telemetria, trate como telemetria") abstendo o desenvolvedor ou o leitor sobre *como* está fazendo (escondido na função específica).
+**Resposta:** Ela se transforma em uma leitura clara e declarativa (auto-documentada), onde o código diz *o que* está fazendo de maneira fluída (ex: "se é tópico de telemetria, trate como telemetria") abstendo o desenvolvedor ou o leitor sobre *como* está fazendo (escondido na função específica), facilitando a leitura da cadeia decisória.
 
 ---
 
