@@ -337,15 +337,16 @@ public class MqttTransportHandlerTest {
 
     @Test
     public void testProcessDevicePublishTelemetryFlow() {
-        MqttTransportHandler handler = new MqttTransportHandler();
+        TelemetryServiceMock telemetryServiceMock = new TelemetryServiceMock();
+        MqttTransportHandler handler = new MqttTransportHandler(telemetryServiceMock);
         String topicName = "v1/devices/me/telemetry"; 
         int msgId = 1;
         
-        // Simulação prática que utilizaria mocks e stubs na infraestrutura original
-        // handler.processDevicePublish(ctxMock, mqttMsgMock, topicName, msgId);
+        // Chamada real da simulação
+        handler.processDevicePublish(null, null, topicName, msgId);
         
-        // Assegurar-se-ia que a rota específica foi ativada.
-        // assertTrue(telemetryServiceMock.wasCalled());
+        // Assegurando que a rota específica foi ativada no mock
+        assertTrue(telemetryServiceMock.wasCalled(), "O fluxo de telemetria deveria ter sido chamado");
     }
 }
 ```
@@ -371,8 +372,10 @@ O compilador exigirá que você passe variáveis locais para o seu novo método.
 Exemplo visual de uma parte do código sendo isolada:
 
 ```java
-private void handleDeviceAttributes(/* seus parâmetros */) {
+private void handleDeviceAttributes(String topicName, int msgId) {
     // Lógica isolada de PostAttributeMsg aqui...
+    System.out.println("Processando atributos...");
+    telemetryService.processAttributes(topicName, msgId);
 }
 ```
 
@@ -389,18 +392,15 @@ Agora que a complexidade foi abstraída para métodos auxiliares, volte ao méto
 📍 **Checkpoint 2: Refatoração Concluída**
 Verifique como o seu método processDevicePublish se tornou um "controlador". Ele agora apenas verifica o nome do tópico e delega a função, sem saber dos detalhes de implementação. 
 ```java
-void processDevicePublish(ChannelHandlerContext ctx, MqttPublishMessage mqttMsg, String topicName, int msgId) {
-    try {
-        if (deviceSessionCtx.isDeviceAttributesTopic(topicName)) {
-            handleDeviceAttributes(ctx, mqttMsg, topicName, msgId);
-        } else if (deviceSessionCtx.isDeviceTelemetryTopic(topicName)) {
-            handleDeviceTelemetry(ctx, mqttMsg, topicName, msgId);
-        } 
-        // ... a estrutura se mantém, mas os blocos estão limpos!
-    } catch (Exception e) {
-        log.warn("[{}] Failed to process...", sessionId, e);
-        ctx.close();
+public void processDevicePublish(Object ctx, Object mqttMsg, String topicName, int msgId) {
+    if ("v1/devices/me/attributes".equals(topicName)) {
+        handleDeviceAttributes(topicName, msgId);
+    } else if ("v1/devices/me/telemetry".equals(topicName)) {
+        handleDeviceTelemetry(topicName, msgId);
+    } else if (topicName != null && topicName.startsWith("v1/devices/me/rpc/request/")) {
+        handleDeviceRpc(topicName, msgId);
     }
+    // ... a estrutura se mantém, mas os blocos de lógica complexa estão limpos!
 }
 ```
 **⚠️ Validação Final: Salve seu progresso e responda às questões de fechamento no [formulário](https://forms.gle/4fNz6FHpGGCzW5vu5):**
